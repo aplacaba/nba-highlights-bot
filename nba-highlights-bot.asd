@@ -21,9 +21,9 @@
   :depends-on ("nba-highlights-bot" "fiveam")
   :components ((:module "t"
                 :components ((:file "packages")
-                             (:file "config")
-                             (:file "teams")
-                             (:file "youtube")
-                             (:file "commands"))))
+                             (:file "config" :depends-on ("packages"))
+                             (:file "teams" :depends-on ("packages"))
+                             (:file "youtube" :depends-on ("packages"))
+                             (:file "commands" :depends-on ("packages")))))
   :perform (test-op (op sys)
              (uiop:symbol-call :nba-highlights-bot/tests :run-tests)))

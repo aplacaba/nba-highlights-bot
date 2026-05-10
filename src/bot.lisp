@@ -45,6 +45,7 @@
 
 (defun start ()
   "Start the NBA highlights bot."
+  (load-config)
   (let ((token (telegram-token)))
     (let ((bot (make-instance 'nba-bot :token token)))
       (cl-telegram-bot/core:start-processing bot)

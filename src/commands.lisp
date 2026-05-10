@@ -16,7 +16,7 @@ Returns two values: the message text and an inline keyboard markup."
             (buttons (loop for (title . url) in videos
                            collect (list (make-instance
                                           'cl-telegram-bot/inline-keyboard::url-button
-                                          :text "Watch on YouTube"
+                                          :text (format nil "~A" title)
                                           :data url)))))
         (values
          (format nil "~{~A~^~%~}" lines)
