@@ -15,7 +15,6 @@ RUN echo '(let ((ql-setup (merge-pathnames "quicklisp/setup.lisp" (user-homedir-
 WORKDIR /root/quicklisp/local-projects/nba-highlights-bot/
 COPY nba-highlights-bot.asd .
 COPY src/ src/
-COPY t/ t/
 
 # Pre-load dependencies and system
 RUN sbcl --non-interactive \
