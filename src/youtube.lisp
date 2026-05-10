@@ -3,27 +3,23 @@
 (defparameter *nba-channel-id* "UCWJ2lWNubArHWmf3FIHbfcQ"
   "The official NBA YouTube channel ID.")
 
-(defun make-rfc3339-timestamp (universal-time)
-  "Convert a universal time to an RFC 3339 timestamp string."
-  (local-time:format-timestring
-   nil (local-time:universal-to-timestamp universal-time)
-   :format '((:year 4) #\- (:month 2) #\- (:day 2) #\T
-             (:hour 2) #\: (:min 2) #\: (:sec 2) #\Z)))
-
-(defun start-of-day-ut (timestamp)
-  "Return the universal time for midnight UTC of the given local-time timestamp."
-  ;; decode-timestamp returns: nsec sec minute hour day month year day-of-week daylight-p offset abbrev
+(defun start-of-day-iso (timestamp)
+  "Return RFC 3339 string for midnight UTC of the date in TIMESTAMP."
   (multiple-value-bind (nsec sec minute hour day month year)
       (local-time:decode-timestamp timestamp :timezone local-time:+utc-zone+)
     (declare (ignore nsec sec minute hour))
-    (encode-universal-time 0 0 0 day month year 0)))
+    (format nil "~4,'0D-~2,'0D-~2,'0DT00:00:00Z" year month day)))
 
-(defun end-of-day-ut (timestamp)
-  "Return the universal time for 23:59:59 UTC of the given local-time timestamp."
+(defun end-of-day-iso (timestamp)
+  "Return RFC 3339 string for 23:59:59 UTC of the date in TIMESTAMP."
   (multiple-value-bind (nsec sec minute hour day month year)
       (local-time:decode-timestamp timestamp :timezone local-time:+utc-zone+)
     (declare (ignore nsec sec minute hour))
-    (encode-universal-time 59 59 23 day month year 0)))
+    (format nil "~4,'0D-~2,'0D-~2,'0DT23:59:59Z" year month day)))
+
+(defun urlencode-param (key value)
+  "URL-encode a query parameter pair, encoding key and value separately."
+  (format nil "~A=~A" (quri:url-encode key) (quri:url-encode value)))
 
 (defun search-highlights (query &key date)
   "Search the NBA YouTube channel for highlight videos.
@@ -31,21 +27,19 @@ QUERY is the search string (e.g. \"Los Angeles Lakers Highlights\").
 DATE is an optional LOCAL-TIME timestamp. When provided, filters results
 to videos published on that date (UTC midnight to midnight).
 Returns a list of (title . url) pairs."
-  (let* ((params `(,@(when date
-                       `(("publishedAfter" . ,(make-rfc3339-timestamp (start-of-day-ut date)))
-                         ("publishedBefore" . ,(make-rfc3339-timestamp (end-of-day-ut date)))))
-                   ("part" . "snippet")
-                   ("channelId" . ,*nba-channel-id*)
-                   ("q" . ,query)
-                   ("type" . "video")
-                   ("order" . "date")
-                   ("maxResults" . "5")
-                   ("key" . ,(youtube-api-key))))
+  (let* ((params (append (when date
+                           `(("publishedAfter" . ,(start-of-day-iso date))
+                             ("publishedBefore" . ,(end-of-day-iso date))))
+                         `(("part" . "snippet")
+                           ("channelId" . ,*nba-channel-id*)
+                           ("q" . ,query)
+                           ("type" . "video")
+                           ("order" . "date")
+                           ("maxResults" . "5")
+                           ("key" . ,(youtube-api-key)))))
          (query-string (format nil "~{~A~^&~}"
                                (loop for (k . v) in params
-                                     collect (format nil "~A=~A"
-                                                     (quri:url-encode k)
-                                                     (quri:url-encode v)))))
+                                     collect (urlencode-param k v))))
          (url (format nil "https://www.googleapis.com/youtube/v3/search?~A" query-string))
          (response (dex:get url
                             :headers '(("Accept" . "application/json")))))
