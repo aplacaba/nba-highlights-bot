@@ -18,7 +18,7 @@
   :in-order-to ((test-op (test-op "nba-highlights-bot/test"))))
 
 (defsystem "nba-highlights-bot/test"
-  :depends-on ("nba-highlights-bot" "fiveam")
+  :depends-on ("nba-highlights-bot" "rove")
   :components ((:module "t"
                 :components ((:file "packages")
                              (:file "config" :depends-on ("packages"))
@@ -26,4 +26,4 @@
                              (:file "youtube" :depends-on ("packages"))
                              (:file "commands" :depends-on ("packages")))))
   :perform (test-op (op sys)
-             (uiop:symbol-call :nba-highlights-bot/tests :run-tests)))
+             (uiop:symbol-call :rove :run sys)))
