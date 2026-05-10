@@ -22,21 +22,9 @@ jobs:
           rm /tmp/quicklisp.lisp
 
       - name: Compile and check for warnings
-        run: |
-          sbcl --non-interactive \
-               --eval '(require :asdf)' \
-               --eval '(push (truename ".") asdf:*central-registry*)' \
-               --eval '(let ((fail nil)) \
-                         (handler-bind ((style-warning (lambda (c) (setf fail t) (invoke-restart (find-restart nil c))))) \
-                           (asdf:compile-system :nba-highlights-bot :force t)) \
-                         (when fail (error "Compilation produced style warnings")))'
+        run: sbcl --non-interactive --load scripts/ci-setup.lisp
 
       - name: Run tests
         env:
           YOUTUBE_API_KEY: test
-        run: |
-          sbcl --non-interactive \
-               --eval '(require :asdf)' \
-               --eval '(push (truename ".") asdf:*central-registry*)' \
-               --eval '(ql:quickload :nba-highlights-bot/test)' \
-               --eval '(asdf:test-system :nba-highlights-bot)'
+        run: sbcl --non-interactive --load scripts/ci-test.lisp
