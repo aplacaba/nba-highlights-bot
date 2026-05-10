@@ -1,18 +1,8 @@
-;;; CI helper: compile system and fail on warnings
+;;; Shared: load Quicklisp, register project
 (require :asdf)
 (push (truename ".") asdf:*central-registry*)
-(load (merge-pathnames "quicklisp/setup.lisp" (user-homedir-pathname)))
-
-(ql:quickload :nba-highlights-bot)
-
-(let ((fail nil))
-  (handler-bind ((warning (lambda (c)
-                             (setf fail t)
-                             (format t "WARNING: ~A~%" c)
-                             (muffle-warning))))
-    (asdf:compile-system :nba-highlights-bot :force t))
-  (when fail
-    (format t "FAIL: Compilation produced warnings~%")
-    (sb-ext:exit :code 1)))
-
-(format t "OK: Compilation clean~%")
+(let ((ql-setup (or (probe-file (merge-pathnames "quicklisp/setup.lisp" (user-homedir-pathname)))
+                    (probe-file (merge-pathnames ".quicklisp/setup.lisp" (user-homedir-pathname))))))
+  (unless ql-setup
+    (error "Quicklisp not found"))
+  (load ql-setup))

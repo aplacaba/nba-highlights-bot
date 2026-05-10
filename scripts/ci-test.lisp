@@ -1,7 +1,5 @@
-;;; CI helper: run tests
-(require :asdf)
-(push (truename ".") asdf:*central-registry*)
-(load (merge-pathnames "quicklisp/setup.lisp" (user-homedir-pathname)))
+;;; CI: run tests
+(load "scripts/ci-setup.lisp")
 
 (ql:quickload :nba-highlights-bot/test)
 (asdf:test-system :nba-highlights-bot)

@@ -22,7 +22,7 @@ jobs:
           rm /tmp/quicklisp.lisp
 
       - name: Compile and check for warnings
-        run: sbcl --non-interactive --load scripts/ci-setup.lisp
+        run: sbcl --non-interactive --load scripts/ci-compile.lisp
 
       - name: Run tests
         env:
