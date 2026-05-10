@@ -1,0 +1,30 @@
+name: Lint
+
+on: [push, pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install SBCL
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y sbcl
+
+      - name: Install Quicklisp
+        run: |
+          curl -o /tmp/quicklisp.lisp https://beta.quicklisp.org/quicklisp.lisp
+          sbcl --non-interactive --load /tmp/quicklisp.lisp \
+               --eval '(quicklisp-quickstart:install)'
+          rm /tmp/quicklisp.lisp
+
+      - name: Compile and check for warnings
+        run: sbcl --non-interactive --load scripts/ci-compile.lisp
+
+      - name: Run tests
+        env:
+          YOUTUBE_API_KEY: test
+        run: sbcl --non-interactive --load scripts/ci-test.lisp

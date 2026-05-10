@@ -1,4 +1,4 @@
-FROM daewok/sbcl:latest
+FROM clfoundation/sbcl:latest
 
 # Install Quicklisp
 RUN curl -o /tmp/quicklisp.lisp https://beta.quicklisp.org/quicklisp.lisp && \
@@ -15,7 +15,6 @@ RUN echo '(let ((ql-setup (merge-pathnames "quicklisp/setup.lisp" (user-homedir-
 WORKDIR /root/quicklisp/local-projects/nba-highlights-bot/
 COPY nba-highlights-bot.asd .
 COPY src/ src/
-COPY t/ t/
 
 # Pre-load dependencies and system
 RUN sbcl --non-interactive \
