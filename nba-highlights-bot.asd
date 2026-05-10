@@ -5,6 +5,7 @@
   :license "MIT"
   :depends-on ("cl-telegram-bot"
                "dexador"
+               "quri"
                "yason"
                "local-time"
                "cl-dotenv")

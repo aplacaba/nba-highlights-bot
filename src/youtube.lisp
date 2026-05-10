@@ -41,8 +41,13 @@ Returns a list of (title . url) pairs."
                    ("order" . "date")
                    ("maxResults" . "5")
                    ("key" . ,(youtube-api-key))))
-         (response (dex:get "https://www.googleapis.com/youtube/v3/search"
-                            :params params
+         (query-string (format nil "~{~A~^&~}"
+                               (loop for (k . v) in params
+                                     collect (format nil "~A=~A"
+                                                     (quri:url-encode k)
+                                                     (quri:url-encode v)))))
+         (url (format nil "https://www.googleapis.com/youtube/v3/search?~A" query-string))
+         (response (dex:get url
                             :headers '(("Accept" . "application/json")))))
     (parse-search-response response)))
 
