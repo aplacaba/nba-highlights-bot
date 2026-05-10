@@ -3,6 +3,8 @@
 (push (truename ".") asdf:*central-registry*)
 (load (merge-pathnames "quicklisp/setup.lisp" (user-homedir-pathname)))
 
+(ql:quickload :nba-highlights-bot)
+
 (let ((fail nil))
   (handler-bind ((warning (lambda (c)
                              (setf fail t)
