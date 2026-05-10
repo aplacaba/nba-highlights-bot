@@ -1,0 +1,11 @@
+*.fasl
+*.lib
+*._abcl
+*.acl
+*.dx32fsl
+*.dx64fsl
+*.lx32fsl
+*.lx64fsl
+*.x86f
+.env
+quicklisp/
