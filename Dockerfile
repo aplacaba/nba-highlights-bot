@@ -1,4 +1,4 @@
-FROM daewok/sbcl:latest
+FROM clfoundation/sbcl:latest
 
 # Install Quicklisp
 RUN curl -o /tmp/quicklisp.lisp https://beta.quicklisp.org/quicklisp.lisp && \
